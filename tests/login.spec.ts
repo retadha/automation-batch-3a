@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-test('Login Success', async ({ page }) => {
+test('Login Success Case', async ({ page }) => {
   await page.goto('https://www.emra.chat/login');
   await page.getByRole('textbox', { name: 'Email' }).click();
   await page.getByRole('textbox', { name: 'Email' }).fill('testingemrachat@gmail.com');
