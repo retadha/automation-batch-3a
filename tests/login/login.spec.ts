@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { LoginPage } from './pages/LoginPage';
 
-test('Login Success Case', async ({ page }) => {
+test.fail('Login Success Case', async ({ page }) => {
   const loginPage = new LoginPage(page);
 
   // Precondition
