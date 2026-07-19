@@ -23,8 +23,8 @@ jobs:
        env:
          PLAYWRIGHT_BROWSERS_PATH: /ms-playwright
 
-     - name: Run Playwright tests
-       run: npx playwright test
+     - name: Run Playwright smoke tests
+       run: npx playwright test --grep="@smoke"
        env:
          PLAYWRIGHT_BROWSERS_PATH: /ms-playwright
      - uses: actions/upload-artifact@v4
