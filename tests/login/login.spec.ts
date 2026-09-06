@@ -1,32 +1,49 @@
 import { test, expect } from '@playwright/test';
 import { LoginPage } from '../../pages/login/LoginPage';
 import userData from '../../data/login/user.json';
+import { pushTestResultToAgentQ } from '../../helper/agentq-helper';
 
-test.fail('Login Success Case @login @positive @p0 @smoke', async ({ page }) => {
-  const loginPage = new LoginPage(page);
+test.describe('Login Tests', () => {
+  let testStartTime: number;
 
-  // Precondition
-  await loginPage.goto();
+  test.beforeEach(async () => {
+    testStartTime = Date.now();
+  });
 
-  const email = userData['regular_user']['email'];
-  const password = userData['regular_user']['password'];
-  // Steps
-  await loginPage.login(email, password);
+  test.afterEach(async ({}, testInfo) => {
+    const executionTime = Date.now() - testStartTime;
+    const errorDetails = testInfo.errors.map((e) => e.message).join('; ');
+    const title = testInfo.title ?? 'Unknown test';
+    const status = testInfo.status ?? 'unknown';
+    await pushTestResultToAgentQ(title, status, executionTime, errorDetails);
+  });
 
-  // Expected
-  await expect(loginPage.userMenuButton('Fadhli Maulidri Baru')).toBeVisible();
-});
+  test.fail('Login Success Case @login @positive @p0 @smoke', async ({ page }) => {
+    const loginPage = new LoginPage(page);
 
-test('Login Failure Case - Invalid Password @login  @negative @p1', async ({ page }) => {
-  const loginPage = new LoginPage(page);
+    // Precondition
+    await loginPage.goto();
 
-  // Precondition
-  await loginPage.goto();
+    const email = userData['regular_user']['email'];
+    const password = userData['regular_user']['password'];
+    // Steps
+    await loginPage.login(email, password);
 
-  // Steps
-  await loginPage.login('testingemrachat@', 'wrongPassword123');
+    // Expected
+    await expect(loginPage.userMenuButton('Fadhli Maulidri Baru')).toBeVisible();
+  });
 
-  // Expected
-  await expect(page).toHaveURL(/login/);
-  await expect(loginPage.signInButton).toBeVisible();
+  test('Login Failure Case - Invalid Password @login  @negative @p1', async ({ page }) => {
+    const loginPage = new LoginPage(page);
+
+    // Precondition
+    await loginPage.goto();
+
+    // Steps
+    await loginPage.login('testingemrachat@', 'wrongPassword123');
+
+    // Expected
+    await expect(page).toHaveURL(/login/);
+    await expect(loginPage.signInButton).toBeVisible();
+  });
 });
