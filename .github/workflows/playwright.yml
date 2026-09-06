@@ -24,7 +24,7 @@ jobs:
          PLAYWRIGHT_BROWSERS_PATH: /ms-playwright
 
      - name: Run Playwright smoke tests
-       run: npx playwright test --grep="@smoke"
+       run: npx playwright test --grep="@signup"
        env:
          PLAYWRIGHT_BROWSERS_PATH: /ms-playwright
      - uses: actions/upload-artifact@v4
