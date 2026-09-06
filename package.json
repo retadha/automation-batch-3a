@@ -2,14 +2,23 @@
   "name": "automation-batch-3a",
   "version": "1.0.0",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "devDependencies": {
     "@playwright/test": "^1.61.1",
-    "@types/node": "^26.1.1"
+    "@types/node": "^26.1.1",
+    "eslint": "^9.39.5",
+    "eslint-config-prettier": "^9.1.2",
+    "eslint-plugin-playwright": "^2.11.0",
+    "prettier": "^3.9.6",
+    "typescript-eslint": "^8.69.0"
   },
   "dependencies": {
     "dotenv": "^17.4.2"
