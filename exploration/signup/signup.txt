@@ -1,0 +1,111 @@
+SIGNUP EXPLORATION PLAN - US-01 Registration via Email & Password
+Base URL: https://www.emra.chat/signup
+Source: Rumi TC Bootcamp (Critical & High priority TCs: TC-REG-1, TC-REG-2, TC-REG-3, TC-REG-4, TC-REG-5, TC-REG-6, TC-REG-7, TC-REG-8, TC-REG-9, TC-REG-10, TC-REG-14)
+
+=== TC-REG-1: User successfully registers with valid data ===
+1. Go to https://www.emra.chat/signup
+2. Enter email qa.user01@example.com
+3. Enter password Password123
+4. Confirm password Password123
+5. Click Next
+6. Enter Full Name Rumi Bootcamp
+7. Select Country Indonesia
+8. Enter phone number 1234567890
+9. Click Next
+10. Enter Company Name Bootcamp 3a
+11. Select Industry Technology
+12. Select Company Size 11-50 employees
+13. Click Create Account
+Expected: Registration completes successfully, user is redirected to the dashboard/onboarding page and sees a message related to email verification
+
+=== TC-REG-2: User cannot register with an already registered email ===
+1. Go to https://www.emra.chat/signup
+2. Enter email rumi@3a.com (an email that is already registered)
+3. Enter password Password123
+4. Confirm password Password123
+5. Click Next
+6. Enter Full Name Rumi Bootcamp
+7. Select Country Indonesia
+8. Enter phone number 1234567890
+9. Click Next
+10. Enter Company Name Bootcamp 3a
+11. Select Industry Technology
+12. Select Company Size 11-50 employees
+13. Click Create Account
+Expected: User is able to proceed through all tabs without being blocked; a validation message stating the email is already registered is shown only after clicking Create Account; registration is not submitted and user stays on the Company Information tab
+
+=== TC-REG-3: Email field rejects invalid format ===
+1. Go to https://www.emra.chat/signup
+2. Enter email testexample.com
+3. Enter password Password123
+4. Confirm password Password123
+5. Click Next
+Expected: A validation message for invalid email format is shown; Next button disabled; user stays on the Create Account tab
+
+=== TC-REG-4: Email field cannot be left empty ===
+1. Go to https://www.emra.chat/signup
+2. Leave the Email field empty
+3. Enter password Password123
+4. Confirm password Password123
+5. Click Next
+Expected: A validation message stating email is required is shown; Next button disabled
+
+=== TC-REG-5: Password field cannot be left empty ===
+1. Go to https://www.emra.chat/signup
+2. Enter email qa.user02@example.com
+3. Leave the Password field empty
+4. Leave the Confirm Password field empty
+5. Click Next
+Expected: A validation message stating password is required is shown; Next button disabled
+
+=== TC-REG-6: Password shorter than 8 characters is rejected ===
+1. Go to https://www.emra.chat/signup
+2. Enter email qa.user03@example.com
+3. Enter password Ab1de (5 characters)
+4. Confirm password Ab1de
+5. Click Next
+Expected: Validation message stating the password is too short (minimum 8 characters) is shown; Next button disabled
+
+=== TC-REG-7: Password longer than 50 characters is rejected ===
+1. Go to https://www.emra.chat/signup
+2. Enter email qa.user04@example.com
+3. Enter password Aa1Aa1Aa1Aa1Aa1Aa1Aa1Aa1Aa1Aa1Aa1Aa1Aa1Aa1Aa1Aa1Aa1 (51 characters)
+4. Confirm password with the same value
+5. Click Next
+Expected: Validation message stating the password exceeds the maximum length (50 characters) is shown; Next button disabled
+
+=== TC-REG-8: Password without required character combination is rejected ===
+1. Go to https://www.emra.chat/signup
+2. Enter email qa.user05@example.com
+3. Enter password password123 (no uppercase letter)
+4. Confirm password password123
+5. Click Next
+Expected: Validation message stating the password is too weak (missing required character combination) is shown; Next button disabled
+
+=== TC-REG-9: Confirm password must match password ===
+1. Go to https://www.emra.chat/signup
+2. Enter email qa.user06@example.com
+3. Enter password Password123
+4. Enter confirm password Password124 (different value)
+5. Click Next
+Expected: Validation message stating the password confirmation does not match is shown; Next button disabled
+
+=== TC-REG-10: Confirm password field cannot be left empty ===
+1. Go to https://www.emra.chat/signup
+2. Enter email qa.user07@example.com
+3. Enter password Password123
+4. Leave the Confirm Password field empty
+5. Click Next
+Expected: A validation message stating confirm password is required is shown; Next button disabled
+
+=== TC-REG-14: Phone number longer than maximum digits is rejected ===
+1. Go to https://www.emra.chat/signup
+2. Enter email qa.user12@example.com
+3. Enter password Password123
+4. Confirm password Password123
+5. Click Next
+6. Enter Full Name Rumi Bootcamp
+7. Select Country Indonesia (country code +62, 2 digits)
+8. Enter phone number 12345678901234 (14 digits; combined with the +62 country code this exceeds the 15-digit E.164 limit)
+9. Click Next
+Expected: A validation message stating the phone number format is invalid is shown; Next button disabled; user stays on the User Information tab
