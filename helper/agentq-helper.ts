@@ -1,4 +1,11 @@
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
+
+interface TestResultPayload {
+  status: string;
+  actualResult: string;
+  executionTime: number;
+  notes: string;
+}
 
 const AGENTQ_API_URL = process.env.AGENTQ_API_URL || 'https://backend-app.agentq.id';
 const AGENTQ_PROJECT_ID = process.env.AGENTQ_PROJECT_ID;
@@ -30,13 +37,17 @@ async function getAccessToken(): Promise<string> {
     accessToken = response.data.access_token;
     console.log('✅ AgentQ authentication successful');
     return accessToken;
-  } catch (error: any) {
-    console.error('❌ AgentQ authentication failed:', error.response?.data || error.message);
+  } catch (error) {
+    const axiosError = error as AxiosError;
+    console.error(
+      '❌ AgentQ authentication failed:',
+      axiosError.response?.data || axiosError.message,
+    );
     throw error;
   }
 }
 
-async function exportTestResult(tcId: string, result: any) {
+async function exportTestResult(tcId: string, result: TestResultPayload) {
   const token = await getAccessToken();
   const apiUrl = `${AGENTQ_API_URL}/projects/${AGENTQ_PROJECT_ID}/test-runs/${AGENTQ_TESTRUN_ID}/test-results/tcId/${tcId}`;
 
@@ -51,11 +62,17 @@ async function exportTestResult(tcId: string, result: any) {
     });
     console.log(`✅ TC-REG-${tcId} updated successfully`);
     return response.data;
-  } catch (error: any) {
-    if (error.response?.status === 404) {
-      console.log(`⚠️ TC-REG-${tcId} not found in AgentQ test run. Test case may need to be created first.`);
+  } catch (error) {
+    const axiosError = error as AxiosError;
+    if (axiosError.response?.status === 404) {
+      console.log(
+        `⚠️ TC-REG-${tcId} not found in AgentQ test run. Test case may need to be created first.`,
+      );
     } else {
-      console.error(`❌ Failed to push TC-REG-${tcId}:`, error.response?.data || error.message);
+      console.error(
+        `❌ Failed to push TC-REG-${tcId}:`,
+        axiosError.response?.data || axiosError.message,
+      );
     }
     // Don't throw error - allow test to continue
   }
@@ -90,6 +107,8 @@ export async function pushTestResultToAgentQ(
     status: status,
     actualResult: isPassed ? `Test "${testTitle}" passed successfully` : `Test status: ${status}`,
     executionTime: executionTime / 1000, // convert to seconds
-    notes: isPassed ? 'Test completed without errors' : errorDetails || `Test failed with status: ${status}`,
+    notes: isPassed
+      ? 'Test completed without errors'
+      : errorDetails || `Test failed with status: ${status}`,
   });
 }
