@@ -9,6 +9,7 @@ Every feature gets its own folder, mirrored identically across `pages/`, `data/`
 ```
 tests/<type>/<feature>/<feature>.spec.ts
 pages/<feature>/<PageName>Page.ts
+clients/<feature>/<Feature>Client.ts   (API tests only — see API tests section)
 data/<feature>/<name>.json
 data/<feature>/generateData.ts
 exploration/<feature>/<feature>.txt
@@ -54,6 +55,15 @@ data/
 - Page objects hold no assertions (`expect`) — assertions live in the spec file.
 - **Prefer a single object (JSON-shaped) parameter over multiple positional parameters** for any method taking more than 1–2 values. `fillCompanyInfo({ companyName, industry, companySize })`, not `fillCompanyInfo(companyName, industry, companySize)` — call sites stay readable, arguments can't be silently swapped, and it's trivial to spread a data-object case straight in (e.g. `signup({ ...validUser })`).
 
+## API tests
+
+- Live in `tests/api/<feature>/<feature>.spec.ts`, using Playwright's built-in `request` fixture — no extra HTTP library needed for tests themselves (axios stays reserved for the AgentQ reporter, which isn't a test).
+- Each feature gets an **API client** in `clients/<feature>/<Feature>Client.ts` — the API equivalent of a page object: wraps endpoint calls (base path, headers, body), returns the raw response, and holds no assertions. Same intent-named-methods and object-parameter rules as POM apply here.
+- Reuses the same `data/<feature>/` fixtures and `generateData.ts` helper as UI tests, so valid/invalid payloads have one source of truth regardless of which layer is testing them.
+- Assert on status code and response body shape — not on incidental details like header order or internal fields outside the documented contract.
+- Add an `@api` tag alongside the usual `@<feature> @positive|@negative @p0|@p1|@p2` tags, so a plain `--grep @signup` doesn't silently run both the UI and API suites together when only one was intended. UI tests carry the matching `@ui` tag for the same reason (e.g. `--grep="@ui.*@signup"` vs `--grep="@api.*@signup"`).
+- API test results are **not** pushed to AgentQ (`agentq-reporter.ts` skips any test tagged `@api`) — AgentQ tracks the QA test-case suite, which the API layer re-verifies rather than owns; only the UI run reports status.
+
 ## Test data (JSON)
 
 - Reusable fixtures go in `data/<feature>/*.json`, imported directly (`import users from '../../data/signup/users.json'`).
@@ -70,8 +80,7 @@ data/
 
 - For **accepted/valid (positive) test data only**, always generate values through a shared helper function using `@faker-js/faker` — never hardcode a literal valid email/name/etc. that's meant to represent "any valid input."
 - **Negative/invalid test data stays hardcoded, never randomized** — boundary and format-violation values (e.g. a 51-character password, a 101-character name, an email missing `@`) must stay deterministic and exact, since the whole point is hitting a specific validation rule precisely.
-- The helper lives in `data/<feature>/generateData.ts`, next to that feature's static JSON fixtures, and is reused across specs rather than each spec rolling its own faker calls inline.
-- **Status: not implemented yet.** Hold off on writing the actual faker helper/wiring it into specs until after the current MCP exploration pass is done — this entry documents the convention so it's not lost, not a request to build it now.
+- The helper lives in `data/<feature>/generateData.ts`, next to that feature's static JSON fixtures, and is reused across specs rather than each spec rolling its own faker calls inline (see `data/signup/generateData.ts`).
 
 ## Minimize test count — prefer data-driven tests
 

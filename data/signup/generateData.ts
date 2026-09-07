@@ -71,3 +71,32 @@ export function generateValidUser(): SignupData {
     companySize: randomCompanySize(),
   };
 }
+
+export interface RegisterApiPayload {
+  name: string;
+  email: string;
+  phone: string;
+  countryCode: string;
+  country: string;
+  password: string;
+  passwordConfirmation: string;
+}
+
+/**
+ * A valid POST /auth/register payload, shaped exactly as the API expects it
+ * (captured via Playwright MCP network inspection) — full E.164 phone, ISO
+ * country code, no UI-only fields. Country is fixed to Indonesia (+62/"ID"),
+ * matching the app's default and every other fixture in this project.
+ */
+export function generateValidRegisterPayload(): RegisterApiPayload {
+  const password = generatePassword();
+  return {
+    name: generateFullName(),
+    email: generateEmail(),
+    phone: `+62${generatePhoneNumber()}`,
+    countryCode: '62',
+    country: 'ID',
+    password,
+    passwordConfirmation: password,
+  };
+}
