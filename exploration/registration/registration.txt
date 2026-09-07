@@ -1,4 +1,4 @@
-SIGNUP EXPLORATION PLAN - US-01 Registration via Email & Password
+REGISTRATION EXPLORATION PLAN - US-01 Registration via Email & Password
 Base URL: https://www.emra.chat/signup
 Source: Rumi TC Bootcamp (Critical & High priority TCs: TC-REG-1, TC-REG-2, TC-REG-3, TC-REG-4, TC-REG-5, TC-REG-6, TC-REG-7, TC-REG-8, TC-REG-9, TC-REG-10, TC-REG-14)
 

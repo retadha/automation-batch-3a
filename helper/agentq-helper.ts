@@ -80,7 +80,7 @@ async function exportTestResult(tcId: string, result: TestResultPayload) {
 
 /**
  * Pushes a test's result to AgentQ. The test case ID is read from a `TC-REG-<n>`
- * tag anywhere in the title (e.g. "TC-REG-6: Password shorter than 8 characters is rejected @signup @p1"),
+ * tag anywhere in the title (e.g. "TC-REG-6: Password shorter than 8 characters is rejected @registration @p1"),
  * matching this repo's tagging convention.
  */
 export async function pushTestResultToAgentQ(

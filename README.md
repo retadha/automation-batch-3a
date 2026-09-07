@@ -1,4 +1,4 @@
-# 🧪 Emra Chat Signup — QA & Test Automation
+# 🧪 Emra Chat Registration — QA & Test Automation
 
 An end-to-end **Playwright + TypeScript** test automation project for Emra's user registration flow, built as part of a QA bootcamp by directing and verifying AI tooling (**Claude Code**, **Playwright MCP**) as part of the workflow. Covers the full pipeline: **project conventions**, **scripted manual testing**, a **Page Object Model (POM)** automation framework with **data-driven testing**, a parallel **API test layer** for backend-level validation coverage, **AgentQ reporting integration**, and a **CI/CD** pipeline via GitHub Actions and Docker.
 
@@ -83,17 +83,17 @@ BASE_URL=https://www.emra.chat
 
 AgentQ reporting is optional — without `AGENTQ_TESTRUN_ID` set, tests still run normally and reporting is simply skipped.
 
-**3. Run the signup tests**
+**3. Run the registration tests**
 
 ```bash
 # UI + API together
-npx playwright test --grep "@signup"
+npx playwright test --grep "@registration"
 
 # UI only
-npx playwright test --grep "@ui.*@signup"
+npx playwright test --grep "@ui.*@registration"
 
 # API only
-npx playwright test --grep "@api.*@signup"
+npx playwright test --grep "@api.*@registration"
 ```
 
 **4. Open the HTML report**

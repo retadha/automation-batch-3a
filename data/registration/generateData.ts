@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker';
 import options from './options.json';
 
-export interface SignupData {
+export interface RegistrationData {
   email: string;
   password: string;
   fullName: string;
@@ -59,8 +59,8 @@ export function randomCompanySize(): string {
   return randomFrom(options.company_size);
 }
 
-/** A complete, valid signup payload — every field is either faker-generated or randomly picked from a recorded option list. */
-export function generateValidUser(): SignupData {
+/** A complete, valid registration payload — every field is either faker-generated or randomly picked from a recorded option list. */
+export function generateValidUser(): RegistrationData {
   return {
     email: generateEmail(),
     password: generatePassword(),

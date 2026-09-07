@@ -1,43 +1,43 @@
 import { test, expect } from '@playwright/test';
-import { SignupPage } from '../../../pages/signup/SignupPage';
-import users from '../../../data/signup/users.json';
+import { RegistrationPage } from '../../../pages/registration/RegistrationPage';
+import users from '../../../data/registration/users.json';
 import {
   generateValidUser,
   generateEmail,
   generatePassword,
   generateFullName,
-} from '../../../data/signup/generateData';
+} from '../../../data/registration/generateData';
 
-test('TC-REG-1: User successfully registers with valid data @ui @signup @positive @p0 @smoke', async ({
+test('TC-REG-1: User successfully registers with valid data @ui @registration @positive @p0 @smoke', async ({
   page,
 }) => {
-  const signupPage = new SignupPage(page);
+  const registrationPage = new RegistrationPage(page);
 
   // Precondition
-  await signupPage.goto();
+  await registrationPage.goto();
 
   // Steps
-  await signupPage.signup(generateValidUser());
+  await registrationPage.register(generateValidUser());
 
   // Expected
   await expect(page).toHaveURL(/onboarding/);
   await expect(page.getByText('Please verify your email address')).toBeVisible();
 });
 
-test('TC-REG-2: User cannot register with an already registered email @ui @signup @negative @p0', async ({
+test('TC-REG-2: User cannot register with an already registered email @ui @registration @negative @p0', async ({
   page,
 }) => {
-  const signupPage = new SignupPage(page);
+  const registrationPage = new RegistrationPage(page);
 
   // Precondition
-  await signupPage.goto();
+  await registrationPage.goto();
 
   // Steps
-  await signupPage.signup({ ...generateValidUser(), ...users.existing_user });
+  await registrationPage.register({ ...generateValidUser(), ...users.existing_user });
 
   // Expected — backend rejects the duplicate email; form resets back to the Create Account tab
   await expect(page.getByText('Create Account', { exact: true })).toBeVisible();
-  await expect(signupPage.emailInput).toBeEmpty();
+  await expect(registrationPage.emailInput).toBeEmpty();
 });
 
 const validPassword = generatePassword();
@@ -95,85 +95,85 @@ const createAccountCases = [
 ];
 
 for (const testCase of createAccountCases) {
-  test(`${testCase.tc}: ${testCase.name} @ui @signup @negative @p1`, async ({ page }) => {
-    const signupPage = new SignupPage(page);
+  test(`${testCase.tc}: ${testCase.name} @ui @registration @negative @p1`, async ({ page }) => {
+    const registrationPage = new RegistrationPage(page);
 
     // Precondition
-    await signupPage.goto();
+    await registrationPage.goto();
 
     // Steps
-    await signupPage.fillCreateAccount(testCase);
+    await registrationPage.fillCreateAccount(testCase);
 
     // Expected
-    await expect(signupPage.fieldError(testCase.expectedMessage)).toBeVisible();
-    await expect(signupPage.nextButton).toBeDisabled();
+    await expect(registrationPage.fieldError(testCase.expectedMessage)).toBeVisible();
+    await expect(registrationPage.nextButton).toBeDisabled();
   });
 }
 
-test('TC-REG-7: Password longer than 50 characters is rejected @ui @signup @negative @p1', async ({
+test('TC-REG-7: Password longer than 50 characters is rejected @ui @registration @negative @p1', async ({
   page,
 }) => {
-  const signupPage = new SignupPage(page);
+  const registrationPage = new RegistrationPage(page);
   const password = 'Aa1'.repeat(17); // 51 characters
 
   // Precondition
-  await signupPage.goto();
+  await registrationPage.goto();
 
   // Steps — a 51-character password should be rejected, but the app currently accepts it
-  await signupPage.fillCreateAccount({
+  await registrationPage.fillCreateAccount({
     email: generateEmail(),
     password,
     confirmPassword: password,
   });
 
   // Expected (currently failing — known bug, see TC-REG-7)
-  await expect(signupPage.nextButton).toBeDisabled();
+  await expect(registrationPage.nextButton).toBeDisabled();
 });
 
-test('TC-REG-8: Password without required character combination is rejected @ui @signup @negative @p1', async ({
+test('TC-REG-8: Password without required character combination is rejected @ui @registration @negative @p1', async ({
   page,
 }) => {
-  const signupPage = new SignupPage(page);
+  const registrationPage = new RegistrationPage(page);
 
   // Precondition
-  await signupPage.goto();
+  await registrationPage.goto();
 
   // Steps — a password missing an uppercase letter should be rejected, but the app currently accepts it
-  await signupPage.fillCreateAccount({
+  await registrationPage.fillCreateAccount({
     email: generateEmail(),
     password: 'password123',
     confirmPassword: 'password123',
   });
 
   // Expected (currently failing — known bug, see TC-REG-8)
-  await expect(signupPage.nextButton).toBeDisabled();
+  await expect(registrationPage.nextButton).toBeDisabled();
 });
 
-test('TC-REG-14: Phone number longer than maximum digits is rejected @ui @signup @negative @p0', async ({
+test('TC-REG-14: Phone number longer than maximum digits is rejected @ui @registration @negative @p0', async ({
   page,
 }) => {
-  const signupPage = new SignupPage(page);
+  const registrationPage = new RegistrationPage(page);
 
   // Precondition — complete the Create Account tab with valid data
-  await signupPage.goto();
+  await registrationPage.goto();
   const password = generatePassword();
-  await signupPage.fillCreateAccount({
+  await registrationPage.fillCreateAccount({
     email: generateEmail(),
     password,
     confirmPassword: password,
   });
-  await signupPage.nextButton.click();
+  await registrationPage.nextButton.click();
 
   // Steps — Country stays on its default (Indonesia); phone number exceeds the 9-13 digit range
-  await signupPage.fillUserInformation({
+  await registrationPage.fillUserInformation({
     fullName: generateFullName(),
     phoneNumber: '12345678901234',
   });
-  await signupPage.nextButton.click();
+  await registrationPage.nextButton.click();
 
   // Expected
   await expect(
-    signupPage.fieldError('Please enter a valid phone number (9-13 digits)'),
+    registrationPage.fieldError('Please enter a valid phone number (9-13 digits)'),
   ).toBeVisible();
-  await expect(signupPage.nextButton).toBeDisabled();
+  await expect(registrationPage.nextButton).toBeDisabled();
 });

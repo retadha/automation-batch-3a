@@ -1,6 +1,6 @@
 import { Page, Locator } from '@playwright/test';
 
-export class SignupPage {
+export class RegistrationPage {
   readonly page: Page;
   // Step 1: Create Account (Email, Password)
   readonly emailInput: Locator;
@@ -100,8 +100,8 @@ export class SignupPage {
     return this.page.getByText(message, { exact: true });
   }
 
-  /** Convenience: complete the full 3-step signup with valid data. */
-  async signup({
+  /** Convenience: complete the full 3-step registration with valid data. */
+  async register({
     email,
     password,
     fullName,

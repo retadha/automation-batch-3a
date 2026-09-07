@@ -1,6 +1,6 @@
 # Project Conventions — automation-batch-3a
 
-Playwright + TypeScript E2E suite for the Emra signup/login flows.
+Playwright + TypeScript E2E suite for the Emra registration/login flows.
 
 ## Folder structure — feature folder always comes first
 
@@ -15,45 +15,45 @@ data/<feature>/generateData.ts
 exploration/<feature>/<feature>.txt
 ```
 
-Example (current features: `signup`, `login`; current test type: `ui`):
+Example (current features: `registration`, `login`; current test type: `ui`):
 
 ```
 tests/
   ui/
-    signup/
-      signup.spec.ts
+    registration/
+      registration.spec.ts
     login/
       login.spec.ts
 pages/
-  signup/
-    SignupPage.ts
+  registration/
+    RegistrationPage.ts
   login/
     LoginPage.ts
 data/
-  signup/
+  registration/
     users.json
   login/
     user.json
 ```
 
 - Never put a spec, page object, or data file directly under `tests/`, `pages/`, or `data/` without their required subfolders.
-- A feature folder name should be short, lowercase, and match the user story it covers (e.g. `signup` for US-01 Registration, `login` for US-02 Login).
+- A feature folder name should be short, lowercase, and match the user story it covers (e.g. `registration` for US-01 Registration, `login` for US-02 Login).
 - One-off/example scaffolding (e.g. Playwright's default boilerplate) still gets its own folder (`tests/example/`) rather than living loose at the top level.
 
 ## Manual/MCP exploration scripts
 
 - A manual exploration plan (e.g. a plain-text step list driven through Playwright MCP before automating it) doesn't belong in `tests/`, `pages/`, or `data/` — it's neither a spec, a page object, nor a data fixture.
-- Put it in `exploration/<feature>/<feature>.txt`, following the same feature-first folder pattern as the rest of the repo (e.g. `exploration/signup/signup.txt`).
+- Put it in `exploration/<feature>/<feature>.txt`, following the same feature-first folder pattern as the rest of the repo (e.g. `exploration/registration/registration.txt`).
 
 ## Page Object Model (POM)
 
-- One class per page/flow, named `<Feature>Page` (e.g. `SignupPage`, `LoginPage`), in `pages/<feature>/`.
+- One class per page/flow, named `<Feature>Page` (e.g. `RegistrationPage`, `LoginPage`), in `pages/<feature>/`.
 - Constructor takes `page: Page` and defines all `Locator`s as `readonly` fields.
 - Locators use accessible queries (`getByRole`, `getByLabel`) over CSS/XPath selectors.
 - Action methods are named after user intent, not implementation (`login()`, `fillProfileInfo()`), and return `Promise<void>` unless a value is genuinely needed.
-- Multi-step flows (e.g. signup) expose both per-step methods (`fillEmailAndPassword`, `fillProfileInfo`, `fillCompanyInfo`) and one convenience method that chains them (`signup(...)`), so tests can exercise a single step or the full flow.
+- Multi-step flows (e.g. registration) expose both per-step methods (`fillEmailAndPassword`, `fillProfileInfo`, `fillCompanyInfo`) and one convenience method that chains them (`register(...)`), so tests can exercise a single step or the full flow.
 - Page objects hold no assertions (`expect`) — assertions live in the spec file.
-- **Prefer a single object (JSON-shaped) parameter over multiple positional parameters** for any method taking more than 1–2 values. `fillCompanyInfo({ companyName, industry, companySize })`, not `fillCompanyInfo(companyName, industry, companySize)` — call sites stay readable, arguments can't be silently swapped, and it's trivial to spread a data-object case straight in (e.g. `signup({ ...validUser })`).
+- **Prefer a single object (JSON-shaped) parameter over multiple positional parameters** for any method taking more than 1–2 values. `fillCompanyInfo({ companyName, industry, companySize })`, not `fillCompanyInfo(companyName, industry, companySize)` — call sites stay readable, arguments can't be silently swapped, and it's trivial to spread a data-object case straight in (e.g. `register({ ...validUser })`).
 
 ## API tests
 
@@ -61,12 +61,12 @@ data/
 - Each feature gets an **API client** in `clients/<feature>/<Feature>Client.ts` — the API equivalent of a page object: wraps endpoint calls (base path, headers, body), returns the raw response, and holds no assertions. Same intent-named-methods and object-parameter rules as POM apply here.
 - Reuses the same `data/<feature>/` fixtures and `generateData.ts` helper as UI tests, so valid/invalid payloads have one source of truth regardless of which layer is testing them.
 - Assert on status code and response body shape — not on incidental details like header order or internal fields outside the documented contract.
-- Add an `@api` tag alongside the usual `@<feature> @positive|@negative @p0|@p1|@p2` tags, so a plain `--grep @signup` doesn't silently run both the UI and API suites together when only one was intended. UI tests carry the matching `@ui` tag for the same reason (e.g. `--grep="@ui.*@signup"` vs `--grep="@api.*@signup"`).
+- Add an `@api` tag alongside the usual `@<feature> @positive|@negative @p0|@p1|@p2` tags, so a plain `--grep @registration` doesn't silently run both the UI and API suites together when only one was intended. UI tests carry the matching `@ui` tag for the same reason (e.g. `--grep="@ui.*@registration"` vs `--grep="@api.*@registration"`).
 - API test results are **not** pushed to AgentQ (`agentq-reporter.ts` skips any test tagged `@api`) — AgentQ tracks the QA test-case suite, which the API layer re-verifies rather than owns; only the UI run reports status.
 
 ## Test data (JSON)
 
-- Reusable fixtures go in `data/<feature>/*.json`, imported directly (`import users from '../../data/signup/users.json'`).
+- Reusable fixtures go in `data/<feature>/*.json`, imported directly (`import users from '../../data/registration/users.json'`).
 - Keys are named by role/scenario, not by literal value (`valid_user`, `existing_user`, `admin_user`), so specs read as intent, not data dumps.
 - Inline literals in a spec are fine for one-off/negative-path values that don't need reuse (e.g. a single mismatched-password test); once a value is reused across 2+ tests, promote it to the feature's JSON file.
 
@@ -80,7 +80,7 @@ data/
 
 - For **accepted/valid (positive) test data only**, always generate values through a shared helper function using `@faker-js/faker` — never hardcode a literal valid email/name/etc. that's meant to represent "any valid input."
 - **Negative/invalid test data stays hardcoded, never randomized** — boundary and format-violation values (e.g. a 51-character password, a 101-character name, an email missing `@`) must stay deterministic and exact, since the whole point is hitting a specific validation rule precisely.
-- The helper lives in `data/<feature>/generateData.ts`, next to that feature's static JSON fixtures, and is reused across specs rather than each spec rolling its own faker calls inline (see `data/signup/generateData.ts`).
+- The helper lives in `data/<feature>/generateData.ts`, next to that feature's static JSON fixtures, and is reused across specs rather than each spec rolling its own faker calls inline (see `data/registration/generateData.ts`).
 
 ## Minimize test count — prefer data-driven tests
 
@@ -108,14 +108,14 @@ data/
 
 Matches the QA test case suite (`Rumi TC Bootcamp`):
 
-| Tag   | Meaning                                                       |
-| ----- | ------------------------------------------------------------- |
-| `@p0` | Critical — core user journey (e.g. full signup/login success) |
-| `@p1` | High — required field/format validation                       |
-| `@p2` | Medium — boundary/optional-field checks                       |
+| Tag   | Meaning                                                             |
+| ----- | ------------------------------------------------------------------- |
+| `@p0` | Critical — core user journey (e.g. full registration/login success) |
+| `@p1` | High — required field/format validation                             |
+| `@p2` | Medium — boundary/optional-field checks                             |
 
 ## Running tests
 
 - `npx playwright test` — run everything
-- `npx playwright test tests/ui/signup` — run one feature
+- `npx playwright test tests/ui/registration` — run one feature
 - `npx playwright test --grep @p0` — run by priority tag

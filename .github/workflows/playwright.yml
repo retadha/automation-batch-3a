@@ -1,4 +1,4 @@
-name: Playwright Tests
+name: Playwright Tests for Registration Flow
 on:
   push:
     branches: [ main, master ]
@@ -23,8 +23,8 @@ jobs:
        env:
          PLAYWRIGHT_BROWSERS_PATH: /ms-playwright
 
-     - name: Run Playwright smoke tests
-       run: npx playwright test --grep="@signup"
+     - name: Run Playwright tests for Registration Module
+       run: npx playwright test --grep="@registration"
        env:
          PLAYWRIGHT_BROWSERS_PATH: /ms-playwright
      - uses: actions/upload-artifact@v4

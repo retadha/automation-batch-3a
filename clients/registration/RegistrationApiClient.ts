@@ -56,8 +56,8 @@ export interface CompanyRegisterSuccessResponse {
   message: string;
 }
 
-/** Wraps the signup-related endpoints. Holds no assertions — same rule as a page object. */
-export class SignupApiClient {
+/** Wraps the registration-related endpoints. Holds no assertions — same rule as a page object. */
+export class RegistrationApiClient {
   constructor(private readonly request: APIRequestContext) {}
 
   async register({

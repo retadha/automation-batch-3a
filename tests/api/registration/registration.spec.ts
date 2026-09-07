@@ -1,18 +1,18 @@
 import { test, expect } from '@playwright/test';
 import {
-  SignupApiClient,
+  RegistrationApiClient,
   RegisterSuccessResponse,
   RegisterErrorResponse,
   CompanyRegisterSuccessResponse,
-} from '../../../clients/signup/SignupApiClient';
-import { generateValidRegisterPayload } from '../../../data/signup/generateData';
+} from '../../../clients/registration/RegistrationApiClient';
+import { generateValidRegisterPayload } from '../../../data/registration/generateData';
 import { attachApiCall } from '../../../helper/attachApiCall';
-import users from '../../../data/signup/users.json';
+import users from '../../../data/registration/users.json';
 
-test('TC-REG-1: User successfully registers with valid data @api @signup @positive @p0', async ({
+test('TC-REG-1: User successfully registers with valid data @api @registration @positive @p0', async ({
   request,
 }, testInfo) => {
-  const client = new SignupApiClient(request);
+  const client = new RegistrationApiClient(request);
 
   // Precondition
   const payload = generateValidRegisterPayload();
@@ -32,7 +32,7 @@ test('TC-REG-1: User successfully registers with valid data @api @signup @positi
   expect(registerBody.data.tokens.access_token).toBeTruthy();
   expect(registerBody.message).toBe('Please verify your email address to continue.');
 
-  // Steps — the UI also registers the company right after signup, using the token just issued
+  // Steps — the UI also registers the company right after registration, using the token just issued
   const registerCompany = await client.registerCompany({
     accessToken: registerBody.data.tokens.access_token,
     name: 'API Exploration Co',
@@ -52,10 +52,10 @@ test('TC-REG-1: User successfully registers with valid data @api @signup @positi
   expect(companyBody.message).toBe('Company registered successfully');
 });
 
-test('TC-REG-2: User cannot register with an already registered email @api @signup @negative @p0', async ({
+test('TC-REG-2: User cannot register with an already registered email @api @registration @negative @p0', async ({
   request,
 }, testInfo) => {
-  const client = new SignupApiClient(request);
+  const client = new RegistrationApiClient(request);
 
   // Precondition
   const payload = { ...generateValidRegisterPayload(), email: users.existing_user.email };
@@ -74,7 +74,7 @@ test('TC-REG-2: User cannot register with an already registered email @api @sign
 interface RegisterValidationCase {
   tc: string;
   name: string;
-  overrides: Partial<Parameters<SignupApiClient['register']>[0]>;
+  overrides: Partial<Parameters<RegistrationApiClient['register']>[0]>;
   /** Omit for cases where the backend currently accepts the input (see comment) — nothing to assert an error message against. */
   expectedError?: string;
 }
@@ -113,10 +113,10 @@ const registerValidationCases: RegisterValidationCase[] = [
 ];
 
 for (const testCase of registerValidationCases) {
-  test(`${testCase.tc}: ${testCase.name} @api @signup @negative @p1`, async ({
+  test(`${testCase.tc}: ${testCase.name} @api @registration @negative @p1`, async ({
     request,
   }, testInfo) => {
-    const client = new SignupApiClient(request);
+    const client = new RegistrationApiClient(request);
 
     // Precondition
     const payload = { ...generateValidRegisterPayload(), ...testCase.overrides };
@@ -162,10 +162,10 @@ const backendValidationGaps: RegisterValidationCase[] = [
 ];
 
 for (const testCase of backendValidationGaps) {
-  test(`${testCase.tc}: ${testCase.name} @api @signup @negative @p1`, async ({
+  test(`${testCase.tc}: ${testCase.name} @api @registration @negative @p1`, async ({
     request,
   }, testInfo) => {
-    const client = new SignupApiClient(request);
+    const client = new RegistrationApiClient(request);
 
     // Precondition
     const payload = { ...generateValidRegisterPayload(), ...testCase.overrides };
