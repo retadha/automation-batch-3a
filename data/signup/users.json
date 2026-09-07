@@ -1,13 +1,4 @@
 {
-  "valid_user": {
-    "email": "qa.user01@example.com",
-    "password": "Password123",
-    "fullName": "Rumi Bootcamp",
-    "phoneNumber": "812345678",
-    "companyName": "Bootcamp Exploration Co",
-    "industry": "SaaS",
-    "companySize": "11-50 employees"
-  },
   "existing_user": {
     "email": "rumi@3a.com",
     "password": "Password123"

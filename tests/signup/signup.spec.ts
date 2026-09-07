@@ -1,6 +1,12 @@
 import { test, expect } from '@playwright/test';
 import { SignupPage } from '../../pages/signup/SignupPage';
 import users from '../../data/signup/users.json';
+import {
+  generateValidUser,
+  generateEmail,
+  generatePassword,
+  generateFullName,
+} from '../../data/signup/generateData';
 
 test('User successfully registers with valid data @signup @positive @p0 @smoke TC-REG-1', async ({
   page,
@@ -9,10 +15,9 @@ test('User successfully registers with valid data @signup @positive @p0 @smoke T
 
   // Precondition
   await signupPage.goto();
-  const email = `qa.${Date.now()}@example.com`;
 
   // Steps
-  await signupPage.signup({ ...users.valid_user, email });
+  await signupPage.signup(generateValidUser());
 
   // Expected
   await expect(page).toHaveURL(/onboarding/);
@@ -28,34 +33,37 @@ test('User cannot register with an already registered email @signup @negative @p
   await signupPage.goto();
 
   // Steps
-  await signupPage.signup({ ...users.valid_user, ...users.existing_user });
+  await signupPage.signup({ ...generateValidUser(), ...users.existing_user });
 
   // Expected — backend rejects the duplicate email; form resets back to the Create Account tab
   await expect(page.getByText('Create Account', { exact: true })).toBeVisible();
   await expect(signupPage.emailInput).toBeEmpty();
 });
 
+const validPassword = generatePassword();
+const mismatchedPassword = generatePassword();
+
 const createAccountCases = [
   {
     tc: 'TC-REG-3',
     name: 'Email field rejects invalid format',
     email: 'testexample.com',
-    password: 'Password123',
-    confirmPassword: 'Password123',
+    password: validPassword,
+    confirmPassword: validPassword,
     expectedMessage: 'Please enter a valid email address',
   },
   {
     tc: 'TC-REG-4',
     name: 'Email field cannot be left empty',
     email: '',
-    password: 'Password123',
-    confirmPassword: 'Password123',
+    password: validPassword,
+    confirmPassword: validPassword,
     expectedMessage: 'Email is required',
   },
   {
     tc: 'TC-REG-5',
     name: 'Password field cannot be left empty',
-    email: 'qa.user02@example.com',
+    email: generateEmail(),
     password: '',
     confirmPassword: '',
     expectedMessage: 'Password is required',
@@ -63,7 +71,7 @@ const createAccountCases = [
   {
     tc: 'TC-REG-6',
     name: 'Password shorter than 8 characters is rejected',
-    email: 'qa.user03@example.com',
+    email: generateEmail(),
     password: 'Ab1de',
     confirmPassword: 'Ab1de',
     expectedMessage: 'Password must be at least 8 characters',
@@ -71,16 +79,16 @@ const createAccountCases = [
   {
     tc: 'TC-REG-9',
     name: 'Confirm password must match password',
-    email: 'qa.user06@example.com',
-    password: 'Password123',
-    confirmPassword: 'Password124',
+    email: generateEmail(),
+    password: validPassword,
+    confirmPassword: mismatchedPassword,
     expectedMessage: 'Passwords do not match',
   },
   {
     tc: 'TC-REG-10',
     name: 'Confirm password field cannot be left empty',
-    email: 'qa.user07@example.com',
-    password: 'Password123',
+    email: generateEmail(),
+    password: validPassword,
     confirmPassword: '',
     expectedMessage: 'Confirm Password is required',
   },
@@ -113,7 +121,7 @@ test('Password longer than 50 characters is rejected @signup @negative @p1 TC-RE
 
   // Steps — a 51-character password should be rejected, but the app currently accepts it
   await signupPage.fillCreateAccount({
-    email: 'qa.user04@example.com',
+    email: generateEmail(),
     password,
     confirmPassword: password,
   });
@@ -132,7 +140,7 @@ test('Password without required character combination is rejected @signup @negat
 
   // Steps — a password missing an uppercase letter should be rejected, but the app currently accepts it
   await signupPage.fillCreateAccount({
-    email: 'qa.user05@example.com',
+    email: generateEmail(),
     password: 'password123',
     confirmPassword: 'password123',
   });
@@ -148,16 +156,17 @@ test('Phone number longer than maximum digits is rejected @signup @negative @p0 
 
   // Precondition — complete the Create Account tab with valid data
   await signupPage.goto();
+  const password = generatePassword();
   await signupPage.fillCreateAccount({
-    email: 'qa.user12@example.com',
-    password: 'Password123',
-    confirmPassword: 'Password123',
+    email: generateEmail(),
+    password,
+    confirmPassword: password,
   });
   await signupPage.nextButton.click();
 
   // Steps — Country stays on its default (Indonesia); phone number exceeds the 9-13 digit range
   await signupPage.fillUserInformation({
-    fullName: 'Rumi Bootcamp',
+    fullName: generateFullName(),
     phoneNumber: '12345678901234',
   });
   await signupPage.nextButton.click();
