@@ -9,7 +9,7 @@ import { generateValidRegisterPayload } from '../../../data/signup/generateData'
 import { attachApiCall } from '../../../helper/attachApiCall';
 import users from '../../../data/signup/users.json';
 
-test('User successfully registers with valid data @api @signup @positive @p0 TC-REG-1', async ({
+test('TC-REG-1: User successfully registers with valid data @api @signup @positive @p0', async ({
   request,
 }, testInfo) => {
   const client = new SignupApiClient(request);
@@ -52,7 +52,7 @@ test('User successfully registers with valid data @api @signup @positive @p0 TC-
   expect(companyBody.message).toBe('Company registered successfully');
 });
 
-test('User cannot register with an already registered email @api @signup @negative @p0 TC-REG-2', async ({
+test('TC-REG-2: User cannot register with an already registered email @api @signup @negative @p0', async ({
   request,
 }, testInfo) => {
   const client = new SignupApiClient(request);
@@ -113,7 +113,7 @@ const registerValidationCases: RegisterValidationCase[] = [
 ];
 
 for (const testCase of registerValidationCases) {
-  test(`${testCase.name} @api @signup @negative @p1 ${testCase.tc}`, async ({
+  test(`${testCase.tc}: ${testCase.name} @api @signup @negative @p1`, async ({
     request,
   }, testInfo) => {
     const client = new SignupApiClient(request);
@@ -162,7 +162,7 @@ const backendValidationGaps: RegisterValidationCase[] = [
 ];
 
 for (const testCase of backendValidationGaps) {
-  test(`${testCase.name} @api @signup @negative @p1 ${testCase.tc}`, async ({
+  test(`${testCase.tc}: ${testCase.name} @api @signup @negative @p1`, async ({
     request,
   }, testInfo) => {
     const client = new SignupApiClient(request);

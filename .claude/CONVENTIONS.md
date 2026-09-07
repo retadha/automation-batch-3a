@@ -101,7 +101,7 @@ data/
 ## Spec files
 
 - One file per feature: `tests/<type>/<feature>/<feature>.spec.ts`.
-- Test titles end with tags for filtering: `@<feature> @positive|@negative @p0|@p1|@p2 @smoke` (optional) — see Priority convention below.
+- Test titles start with the TC ID, then the description, then tags for filtering: `TC-REG-<n>: <description> @<feature> @positive|@negative @p0|@p1|@p2 @smoke` (smoke optional) — see Priority convention below. The leading TC ID is also what `agentq-helper.ts` reads to match the test to its AgentQ test case.
 - Structure each test with `// Precondition`, `// Steps`, `// Expected` comments in that order.
 
 ## Priority tagging
