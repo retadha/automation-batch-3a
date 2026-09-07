@@ -1,6 +1,6 @@
 # 🧪 Emra Chat Signup — QA & Test Automation
 
-An end-to-end **Playwright + TypeScript** test automation project for Emra's user registration flow, built as part of a QA bootcamp by directing and verifying AI tooling (**Claude Code**, **Playwright MCP**) as part of the workflow. Covers the full pipeline: **project conventions**, **scripted manual testing**, a **Page Object Model (POM)** automation framework with **data-driven testing**, **AgentQ reporting integration**, and a **CI/CD** pipeline via GitHub Actions and Docker.
+An end-to-end **Playwright + TypeScript** test automation project for Emra's user registration flow, built as part of a QA bootcamp by directing and verifying AI tooling (**Claude Code**, **Playwright MCP**) as part of the workflow. Covers the full pipeline: **project conventions**, **scripted manual testing**, a **Page Object Model (POM)** automation framework with **data-driven testing**, a parallel **API test layer** for backend-level validation coverage, **AgentQ reporting integration**, and a **CI/CD** pipeline via GitHub Actions and Docker.
 
 **Tech stack:** Playwright, TypeScript, GitHub Actions, Docker
 
@@ -17,7 +17,8 @@ An end-to-end **Playwright + TypeScript** test automation project for Emra's use
 
 - Walked through each scenario manually on the live application first, instead of assuming how it should work
 - Used **Playwright MCP** to drive a real browser and observe exact behavior — messages shown, fields required, fields optional
-- Surfaced two real defects in the product this way (see below) 🐛
+- Used the same MCP tooling to inspect **network traffic** directly, capturing the exact request/response contract of each endpoint before writing any API test
+- Surfaced real defects in the product this way (see below) 🐛
 
 ### 🏗️ 3. POM & Data-Driven Automation
 
@@ -25,13 +26,21 @@ An end-to-end **Playwright + TypeScript** test automation project for Emra's use
 - Wrote automated tests to match confirmed behavior, including cases where the product doesn't behave correctly
 - Applied **data-driven testing**: combined test cases that followed the same pattern into a single reusable test instead of duplicating code
 
-### 📡 4. Test Reporting Integration
+### 🌐 4. API Test Automation
+
+- Extended coverage below the UI with a dedicated **API test layer**, using Playwright's built-in `request` fixture — no browser required, faster feedback than end-to-end runs
+- Introduced an **API client abstraction** (`clients/`) — the API equivalent of a page object, isolating endpoint calls (URL, headers, payload) from test assertions
+- Reused the same data-driven fixtures and generators as the UI suite, so one source of truth drives both layers
+- Tagged (`@ui` / `@api`) to keep each layer independently filterable and separately reported
+- **Layered testing paid off**: hitting the API directly, bypassing the browser's client-side validation, uncovered backend validation gaps that UI-only testing had missed entirely — confirming some defects exist at the contract level, not just in the frontend form
+
+### 📡 5. Test Reporting Integration
 
 - Test results report automatically to the team's test management tool (AgentQ) after every run
 - Set up once at the framework level, not repeated in every test file
 - Reduces maintenance and the risk of reporting being forgotten
 
-### 🚀 5. CI/CD Pipeline
+### 🚀 6. CI/CD Pipeline
 
 - Tests run automatically via GitHub Actions on every code change
 - Uses a preconfigured Docker environment so runs stay fast and consistent
@@ -40,11 +49,13 @@ An end-to-end **Playwright + TypeScript** test automation project for Emra's use
 ## 📂 Project Structure
 
 ```
-tests/ui/    → test cases, grouped by feature
+tests/ui/    → UI test cases, grouped by feature (Page Object Model)
+tests/api/   → API test cases, grouped by feature (request fixture)
 pages/       → reusable page objects for each screen
-data/        → test data and reference values
+clients/     → API client abstraction — one per feature, for API tests
+data/        → test data, generators, and reference values (shared by both layers)
 exploration/ → manual exploration notes, written before automating
-helper/      → shared utilities (e.g. test reporting)
+helper/      → shared utilities (e.g. test reporting, API-call attachments)
 ```
 
 ## 🛠️ Getting Started
@@ -75,7 +86,14 @@ AgentQ reporting is optional — without `AGENTQ_TESTRUN_ID` set, tests still ru
 **3. Run the signup tests**
 
 ```bash
+# UI + API together
 npx playwright test --grep "@signup"
+
+# UI only
+npx playwright test --grep "@ui.*@signup"
+
+# API only
+npx playwright test --grep "@api.*@signup"
 ```
 
 **4. Open the HTML report**
@@ -90,7 +108,8 @@ npx playwright show-report
 - **Scripted manual testing** — using Playwright MCP to verify real product behavior against planned test cases before writing automation
 - **Test design** — risk-based prioritization, data-driven testing, reducing redundant test cases
 - **Test automation** — Playwright, TypeScript, Page Object Model (POM)
-- **Defect identification** — finding and documenting real product issues
+- **API testing** — direct backend validation via Playwright's `request` fixture, an API client abstraction layer, and network-traffic inspection through Playwright MCP to reverse-engineer request/response contracts
+- **Defect identification** — finding and documenting real product issues across both the UI and API layers, including gaps invisible from the frontend alone
 - **Test reporting integration** — automated result reporting to a test management tool (AgentQ)
 - **CI/CD** — GitHub Actions, Docker
 - **Documentation** — establishing clear project conventions before implementation
@@ -98,10 +117,14 @@ npx playwright show-report
 
 ## 🐛 Bugs Found
 
-| Issue                         | Expected                                        | Actual                   |
-| ----------------------------- | ----------------------------------------------- | ------------------------ |
-| Password length limit         | Passwords over 50 characters should be rejected | Accepted without warning |
-| Password strength requirement | Weak passwords should be rejected               | Accepted without warning |
+| Issue                         | Layer | Expected                                        | Actual                    |
+| ----------------------------- | ----- | ----------------------------------------------- | ------------------------- |
+| Password length limit         | UI    | Passwords over 50 characters should be rejected | Accepted without warning  |
+| Password strength requirement | UI    | Weak passwords should be rejected               | Accepted without warning  |
+| Email format validation       | API   | Malformed email should be rejected server-side  | Accepted, account created |
+| Password minimum length       | API   | Passwords under 8 characters should be rejected | Accepted, account created |
+
+The two API-layer findings go a step further than the UI bugs above: hitting the endpoint directly, bypassing the frontend's client-side checks, showed the backend performs little to no password/email validation of its own — a gap invisible to UI-only testing.
 
 ## 🤖 AI-Assisted, Human-Driven
 
