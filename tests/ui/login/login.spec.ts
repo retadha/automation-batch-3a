@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import { LoginPage } from '../../../pages/login/LoginPage';
 import userData from '../../../data/login/user.json';
 
-test.fail('Login Success Case @login @positive @p0 @smoke', async ({ page }) => {
+test.fail('Login Success Case @ui @login @positive @p0 @smoke', async ({ page }) => {
   const loginPage = new LoginPage(page);
 
   // Precondition
@@ -17,7 +17,7 @@ test.fail('Login Success Case @login @positive @p0 @smoke', async ({ page }) => 
   await expect(loginPage.userMenuButton('Fadhli Maulidri Baru')).toBeVisible();
 });
 
-test('Login Failure Case - Invalid Password @login  @negative @p1', async ({ page }) => {
+test('Login Failure Case - Invalid Password @ui @login @negative @p1', async ({ page }) => {
   const loginPage = new LoginPage(page);
 
   // Precondition

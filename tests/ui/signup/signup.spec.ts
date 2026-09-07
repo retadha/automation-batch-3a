@@ -8,7 +8,7 @@ import {
   generateFullName,
 } from '../../../data/signup/generateData';
 
-test('User successfully registers with valid data @signup @positive @p0 @smoke TC-REG-1', async ({
+test('User successfully registers with valid data @ui @signup @positive @p0 @smoke TC-REG-1', async ({
   page,
 }) => {
   const signupPage = new SignupPage(page);
@@ -24,7 +24,7 @@ test('User successfully registers with valid data @signup @positive @p0 @smoke T
   await expect(page.getByText('Please verify your email address')).toBeVisible();
 });
 
-test('User cannot register with an already registered email @signup @negative @p0 TC-REG-2', async ({
+test('User cannot register with an already registered email @ui @signup @negative @p0 TC-REG-2', async ({
   page,
 }) => {
   const signupPage = new SignupPage(page);
@@ -95,7 +95,7 @@ const createAccountCases = [
 ];
 
 for (const testCase of createAccountCases) {
-  test(`${testCase.name} @signup @negative @p1 ${testCase.tc}`, async ({ page }) => {
+  test(`${testCase.name} @ui @signup @negative @p1 ${testCase.tc}`, async ({ page }) => {
     const signupPage = new SignupPage(page);
 
     // Precondition
@@ -110,7 +110,7 @@ for (const testCase of createAccountCases) {
   });
 }
 
-test('Password longer than 50 characters is rejected @signup @negative @p1 TC-REG-7', async ({
+test('Password longer than 50 characters is rejected @ui @signup @negative @p1 TC-REG-7', async ({
   page,
 }) => {
   const signupPage = new SignupPage(page);
@@ -130,7 +130,7 @@ test('Password longer than 50 characters is rejected @signup @negative @p1 TC-RE
   await expect(signupPage.nextButton).toBeDisabled();
 });
 
-test('Password without required character combination is rejected @signup @negative @p1 TC-REG-8', async ({
+test('Password without required character combination is rejected @ui @signup @negative @p1 TC-REG-8', async ({
   page,
 }) => {
   const signupPage = new SignupPage(page);
@@ -149,7 +149,7 @@ test('Password without required character combination is rejected @signup @negat
   await expect(signupPage.nextButton).toBeDisabled();
 });
 
-test('Phone number longer than maximum digits is rejected @signup @negative @p0 TC-REG-14', async ({
+test('Phone number longer than maximum digits is rejected @ui @signup @negative @p0 TC-REG-14', async ({
   page,
 }) => {
   const signupPage = new SignupPage(page);
