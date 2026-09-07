@@ -40,7 +40,7 @@ An end-to-end **Playwright + TypeScript** test automation project for Emra's use
 ## 📂 Project Structure
 
 ```
-tests/       → test cases, grouped by feature
+tests/ui/    → test cases, grouped by feature
 pages/       → reusable page objects for each screen
 data/        → test data and reference values
 exploration/ → manual exploration notes, written before automating

@@ -4,24 +4,25 @@ Playwright + TypeScript E2E suite for the Emra signup/login flows.
 
 ## Folder structure — feature folder always comes first
 
-Every feature gets its own folder, mirrored identically across `tests/`, `pages/`, `data/`, and `exploration/`:
+Every feature gets its own folder, mirrored identically across `pages/`, `data/`, and `exploration/`. `tests/` adds one extra layer first — the **test type** (`ui`, and future types like `api`) — since a feature can eventually be covered by more than one kind of test:
 
 ```
-tests/<feature>/<feature>.spec.ts
+tests/<type>/<feature>/<feature>.spec.ts
 pages/<feature>/<PageName>Page.ts
 data/<feature>/<name>.json
 data/<feature>/generateData.ts
 exploration/<feature>/<feature>.txt
 ```
 
-Example (current features: `signup`, `login`):
+Example (current features: `signup`, `login`; current test type: `ui`):
 
 ```
 tests/
-  signup/
-    signup.spec.ts
-  login/
-    login.spec.ts
+  ui/
+    signup/
+      signup.spec.ts
+    login/
+      login.spec.ts
 pages/
   signup/
     SignupPage.ts
@@ -34,7 +35,7 @@ data/
     user.json
 ```
 
-- Never put a spec, page object, or data file directly under `tests/`, `pages/`, or `data/` without a feature subfolder.
+- Never put a spec, page object, or data file directly under `tests/`, `pages/`, or `data/` without their required subfolders.
 - A feature folder name should be short, lowercase, and match the user story it covers (e.g. `signup` for US-01 Registration, `login` for US-02 Login).
 - One-off/example scaffolding (e.g. Playwright's default boilerplate) still gets its own folder (`tests/example/`) rather than living loose at the top level.
 
@@ -90,7 +91,7 @@ data/
 
 ## Spec files
 
-- One file per feature: `tests/<feature>/<feature>.spec.ts`.
+- One file per feature: `tests/<type>/<feature>/<feature>.spec.ts`.
 - Test titles end with tags for filtering: `@<feature> @positive|@negative @p0|@p1|@p2 @smoke` (optional) — see Priority convention below.
 - Structure each test with `// Precondition`, `// Steps`, `// Expected` comments in that order.
 
@@ -107,5 +108,5 @@ Matches the QA test case suite (`Rumi TC Bootcamp`):
 ## Running tests
 
 - `npx playwright test` — run everything
-- `npx playwright test tests/signup` — run one feature
+- `npx playwright test tests/ui/signup` — run one feature
 - `npx playwright test --grep @p0` — run by priority tag

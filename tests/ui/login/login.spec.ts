@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
-import { LoginPage } from '../../pages/login/LoginPage';
-import userData from '../../data/login/user.json';
+import { LoginPage } from '../../../pages/login/LoginPage';
+import userData from '../../../data/login/user.json';
 
 test.fail('Login Success Case @login @positive @p0 @smoke', async ({ page }) => {
   const loginPage = new LoginPage(page);

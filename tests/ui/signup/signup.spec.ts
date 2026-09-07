@@ -1,12 +1,12 @@
 import { test, expect } from '@playwright/test';
-import { SignupPage } from '../../pages/signup/SignupPage';
-import users from '../../data/signup/users.json';
+import { SignupPage } from '../../../pages/signup/SignupPage';
+import users from '../../../data/signup/users.json';
 import {
   generateValidUser,
   generateEmail,
   generatePassword,
   generateFullName,
-} from '../../data/signup/generateData';
+} from '../../../data/signup/generateData';
 
 test('User successfully registers with valid data @signup @positive @p0 @smoke TC-REG-1', async ({
   page,
