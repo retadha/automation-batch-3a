@@ -4,6 +4,12 @@ An end-to-end **Playwright + TypeScript** test automation project for Emra's use
 
 **Tech stack:** Playwright, TypeScript, GitHub Actions, Docker
 
+## 📊 Automation Coverage
+
+- **UI: 11 automated / 19 total TCs** — all Critical (2) and High (9) priority scenarios; 8 Medium TCs remain manual
+- **API: 11 automated / 11 total TCs** — same Critical (2) and High (9) priority scenarios, verified independently at the request/response level
+- **100% of Critical and High priority TCs are automated on both layers** (22 automated runs total)
+
 ## 🛤️ QA & Automation Workflow
 
 ### 📐 1. Framework Conventions
