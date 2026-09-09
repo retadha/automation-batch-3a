@@ -62,7 +62,7 @@ data/
 - Reuses the same `data/<feature>/` fixtures and `generateData.ts` helper as UI tests, so valid/invalid payloads have one source of truth regardless of which layer is testing them.
 - Assert on status code and response body shape — not on incidental details like header order or internal fields outside the documented contract.
 - Add an `@api` tag alongside the usual `@<feature> @positive|@negative @p0|@p1|@p2` tags, so a plain `--grep @registration` doesn't silently run both the UI and API suites together when only one was intended. UI tests carry the matching `@ui` tag for the same reason (e.g. `--grep="@ui.*@registration"` vs `--grep="@api.*@registration"`).
-- API test results are **not** pushed to AgentQ (`agentq-reporter.ts` skips any test tagged `@api`) — AgentQ tracks the QA test-case suite, which the API layer re-verifies rather than owns; only the UI run reports status.
+- API test results **are** pushed to AgentQ, same as UI — each layer gets its own TC ID range in the QA test-case suite (e.g. Web TC-REG-1–19, API TC-REG-20+) rather than reusing the UI's IDs, so the two layers report to distinct rows instead of overwriting each other.
 
 ## Test data (JSON)
 

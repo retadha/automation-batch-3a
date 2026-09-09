@@ -9,7 +9,7 @@ import { generateValidRegisterPayload } from '../../../data/registration/generat
 import { attachApiCall } from '../../../helper/attachApiCall';
 import users from '../../../data/registration/users.json';
 
-test('TC-REG-1: User successfully registers with valid data @api @registration @positive @p0', async ({
+test('TC-REG-20: User successfully registers with valid data @api @registration @positive @p0', async ({
   request,
 }, testInfo) => {
   const client = new RegistrationApiClient(request);
@@ -52,7 +52,7 @@ test('TC-REG-1: User successfully registers with valid data @api @registration @
   expect(companyBody.message).toBe('Company registered successfully');
 });
 
-test('TC-REG-2: User cannot register with an already registered email @api @registration @negative @p0', async ({
+test('TC-REG-21: User cannot register with an already registered email @api @registration @negative @p0', async ({
   request,
 }, testInfo) => {
   const client = new RegistrationApiClient(request);
@@ -81,31 +81,31 @@ interface RegisterValidationCase {
 
 const registerValidationCases: RegisterValidationCase[] = [
   {
-    tc: 'TC-REG-4',
+    tc: 'TC-REG-23',
     name: 'Email field cannot be left empty',
     overrides: { email: '' },
     expectedError: "Email can't be blank",
   },
   {
-    tc: 'TC-REG-5',
+    tc: 'TC-REG-24',
     name: 'Password field cannot be left empty',
     overrides: { password: '', passwordConfirmation: '' },
     expectedError: "Password can't be blank",
   },
   {
-    tc: 'TC-REG-9',
+    tc: 'TC-REG-28',
     name: 'Confirm password must match password',
     overrides: { passwordConfirmation: 'Password124' },
     expectedError: "Password confirmation doesn't match Password",
   },
   {
-    tc: 'TC-REG-10',
+    tc: 'TC-REG-29',
     name: 'Confirm password field cannot be left empty',
     overrides: { passwordConfirmation: '' },
     expectedError: "Password confirmation can't be blank",
   },
   {
-    tc: 'TC-REG-14',
+    tc: 'TC-REG-30',
     name: 'Phone number longer than maximum digits is rejected',
     overrides: { phone: '+6212345678901234' }, // 14-digit local part
     expectedError: 'Phone number must be a valid phone number in E.164 format (e.g., +1234567890)',
@@ -133,11 +133,11 @@ for (const testCase of registerValidationCases) {
 
 // The backend does not currently enforce the documented password policy or email format at all —
 // only "not blank" and "confirmation matches" are validated (see registerValidationCases above).
-// These three mirror the equivalent UI bugs (TC-REG-7, TC-REG-8) one layer deeper: the API itself
+// These four mirror the equivalent UI bugs (TC-REG-7, TC-REG-8) one layer deeper: the API itself
 // accepts input the PRD explicitly says must be rejected, not just the client-side form.
 const backendValidationGaps: RegisterValidationCase[] = [
   {
-    tc: 'TC-REG-3',
+    tc: 'TC-REG-22',
     name: 'Email field rejects invalid format',
     // Must stay unique per run — a fixed literal would eventually get registered by this very
     // test (since the backend currently accepts it) and start hitting the duplicate-email check
@@ -145,17 +145,17 @@ const backendValidationGaps: RegisterValidationCase[] = [
     overrides: { email: `not-an-email-${Date.now()}` },
   },
   {
-    tc: 'TC-REG-6',
+    tc: 'TC-REG-25',
     name: 'Password shorter than 8 characters is rejected',
     overrides: { password: 'Ab1de', passwordConfirmation: 'Ab1de' },
   },
   {
-    tc: 'TC-REG-7',
+    tc: 'TC-REG-26',
     name: 'Password longer than 50 characters is rejected',
     overrides: { password: 'Aa1'.repeat(17), passwordConfirmation: 'Aa1'.repeat(17) }, // 51 characters
   },
   {
-    tc: 'TC-REG-8',
+    tc: 'TC-REG-27',
     name: 'Password without required character combination is rejected',
     overrides: { password: 'password123', passwordConfirmation: 'password123' },
   },
