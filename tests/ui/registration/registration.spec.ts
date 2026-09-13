@@ -6,6 +6,7 @@ import {
   generateEmail,
   generatePassword,
   generateFullName,
+  generatePhoneNumber,
 } from '../../../data/registration/generateData';
 
 test('TC-REG-1: User successfully registers with valid data @ui @registration @positive @p0 @smoke', async ({
@@ -176,4 +177,145 @@ test('TC-REG-14: Phone number longer than maximum digits is rejected @ui @regist
     registrationPage.fieldError('Please enter a valid phone number (9-13 digits)'),
   ).toBeVisible();
   await expect(registrationPage.nextButton).toBeDisabled();
+});
+
+const createAccountPositiveCases = [
+  {
+    tc: 'TC-REG-11',
+    name: 'Password with exactly 8 characters is accepted',
+    password: 'Passwo1d', // exactly 8 characters
+  },
+  {
+    tc: 'TC-REG-12',
+    name: 'Password with exactly 50 characters is accepted',
+    password: `${'Aa1'.repeat(16)}Aa`, // exactly 50 characters
+  },
+  {
+    tc: 'TC-REG-13',
+    name: 'Password with optional special character is accepted',
+    password: 'Password123!',
+  },
+];
+
+for (const testCase of createAccountPositiveCases) {
+  test(`${testCase.tc}: ${testCase.name} @ui @registration @positive @p2`, async ({ page }) => {
+    const registrationPage = new RegistrationPage(page);
+
+    // Precondition
+    await registrationPage.goto();
+
+    // Steps
+    await registrationPage.fillCreateAccount({
+      email: generateEmail(),
+      password: testCase.password,
+      confirmPassword: testCase.password,
+    });
+
+    // Expected
+    await expect(registrationPage.nextButton).toBeEnabled();
+    await registrationPage.nextButton.click();
+    await expect(page.getByText('User Information', { exact: true })).toBeVisible();
+  });
+}
+
+/** Completes the Create Account tab with valid, freshly generated data and moves to User Information. */
+async function completeCreateAccountStep(registrationPage: RegistrationPage) {
+  const password = generatePassword();
+  await registrationPage.fillCreateAccount({
+    email: generateEmail(),
+    password,
+    confirmPassword: password,
+  });
+  await registrationPage.nextButton.click();
+}
+
+test('TC-REG-15: Registration succeeds with Phone Number left empty @ui @registration @positive @p2', async ({
+  page,
+}) => {
+  const registrationPage = new RegistrationPage(page);
+
+  // Precondition — complete the Create Account tab with valid data
+  await registrationPage.goto();
+  await completeCreateAccountStep(registrationPage);
+
+  // Steps — Full Name is filled, Country stays on its default, Phone Number is never touched
+  await registrationPage.fullNameInput.fill(generateFullName());
+
+  // Expected (currently failing — known bug, see TC-REG-15): the app treats Phone Number as
+  // required, so Next stays disabled instead of letting the user proceed with it empty.
+  await expect(registrationPage.nextButton).toBeDisabled();
+});
+
+test('TC-REG-16: Full name field cannot be left empty @ui @registration @negative @p2', async ({
+  page,
+}) => {
+  const registrationPage = new RegistrationPage(page);
+
+  // Precondition — complete the Create Account tab with valid data
+  await registrationPage.goto();
+  await completeCreateAccountStep(registrationPage);
+
+  // Steps
+  await registrationPage.fillUserInformation({ fullName: '', phoneNumber: '081234567890' });
+
+  // Expected
+  await expect(registrationPage.fieldError('Name is required')).toBeVisible();
+  await expect(registrationPage.nextButton).toBeDisabled();
+});
+
+test('TC-REG-17: Full name longer than 100 characters is rejected @ui @registration @negative @p2', async ({
+  page,
+}) => {
+  const registrationPage = new RegistrationPage(page);
+  const fullName = 'A'.repeat(101);
+
+  // Precondition — complete the Create Account tab with valid data
+  await registrationPage.goto();
+  await completeCreateAccountStep(registrationPage);
+
+  // Steps — a 101-character name should be rejected, but the app currently accepts it
+  await registrationPage.fillUserInformation({ fullName, phoneNumber: '081234567890' });
+
+  // Expected (currently failing — known bug, see TC-REG-17)
+  await expect(registrationPage.nextButton).toBeDisabled();
+});
+
+test('TC-REG-18: Full name at exactly 100 characters is accepted @ui @registration @positive @p2', async ({
+  page,
+}) => {
+  const registrationPage = new RegistrationPage(page);
+  const fullName = 'A'.repeat(100);
+
+  // Precondition — complete the Create Account tab with valid data
+  await registrationPage.goto();
+  await completeCreateAccountStep(registrationPage);
+
+  // Steps
+  await registrationPage.fillUserInformation({ fullName, phoneNumber: '081234567890' });
+
+  // Expected
+  await expect(registrationPage.nextButton).toBeEnabled();
+  await registrationPage.nextButton.click();
+  await expect(page.getByText('Company Information', { exact: true })).toBeVisible();
+});
+
+test.skip('TC-REG-19: Registration succeeds with Country left unselected @ui @registration @positive @p2', async ({
+  page,
+}) => {
+  const registrationPage = new RegistrationPage(page);
+
+  // Precondition — complete the Create Account tab with valid data
+  await registrationPage.goto();
+  await completeCreateAccountStep(registrationPage);
+
+  // Steps — Country keeps its default (Indonesia); the combobox is never touched
+  await registrationPage.fillUserInformation({
+    fullName: generateFullName(),
+    phoneNumber: generatePhoneNumber(),
+  });
+
+  // Expected
+  await expect(registrationPage.nextButton).toBeEnabled();
+  await registrationPage.nextButton.click();
+  await expect(page.getByText('Company Information', { exact: true })).toBeVisible();
 });

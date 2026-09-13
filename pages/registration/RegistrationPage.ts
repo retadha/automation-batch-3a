@@ -76,7 +76,7 @@ export class RegistrationPage {
 
   /** Fills the User Information tab without submitting. Country keeps its default (Indonesia) unless changed. */
   async fillUserInformation({ fullName, phoneNumber }: { fullName: string; phoneNumber: string }) {
-    await this.fullNameInput.fill(fullName);
+    await this.setFieldValue(this.fullNameInput, fullName);
     await this.phoneNumberInput.fill(phoneNumber);
   }
 
