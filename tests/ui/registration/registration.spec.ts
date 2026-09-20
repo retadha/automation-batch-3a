@@ -243,7 +243,9 @@ test('TC-REG-15: Registration succeeds with Phone Number left empty @ui @registr
 
   // Expected (currently failing — known bug, see TC-REG-15): the app treats Phone Number as
   // required, so Next stays disabled instead of letting the user proceed with it empty.
-  await expect(registrationPage.nextButton).toBeDisabled();
+  await expect(registrationPage.nextButton).toBeEnabled();
+  await registrationPage.nextButton.click();
+  await expect(page.getByText('Company Information', { exact: true })).toBeVisible();
 });
 
 test('TC-REG-16: Full name field cannot be left empty @ui @registration @negative @p2', async ({
